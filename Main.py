@@ -23,7 +23,7 @@ bot = telebot.TeleBot(TOKEN)
 log.basicConfig(filename=Logpath,level=log.INFO, format='%(asctime)s %(message)s', datefmt='%m.%d.%Y %H:%M:%S')
 
 write_success=False #для отслеживания успеха записи данных на лист
-admin_ID='591342003'#Мой ID, сюда будем слать всякую важную инфу
+admin_ID='ID'#Мой ID, сюда будем слать всякую важную инфу
 
 write_ID_failed_msg='Не удалось записать пользователя {} на лист'
 Start_and_Greeting = 'Добро пожаловать! \nЭтот бот нужен для всяких полезных штук.'
@@ -66,7 +66,6 @@ def contact_handler(message):
     remove_btn = types.ReplyKeyboardRemove(selective=False)
 
     phone_number=message.contact.phone_number
-    #phone_number='89042165822' #DEBUGGING VERSION
     contact_confirm='Ищу номер телефона {} в списке волонтеров...'.format(phone_number)
     bot.send_message(message.from_user.id,contact_confirm,reply_markup=remove_btn)
 
@@ -98,53 +97,6 @@ def contact_handler(message):
         bot.send_message(message.from_user.id,Start_and_Greeting)
 
 
-#закомментили глючный блок конфликтующих да-нет опросов
-#теперь мы знаем, как его раскомментить: явно указав кнопки, которые он обрабатывает.
-##        Y_N_keyboard_1=types.InlineKeyboardMarkup();
-##        key_yes_1=types.InlineKeyboardButton(text="Да",callback_data='yes');
-##        key_no_1=types.InlineKeyboardButton(text="Нет",callback_data='no');
-##        Y_N_keyboard_1.add(key_yes_1,key_no_1)
-##
-##        user_row=phone_result
-##        name_confirm= 'Вас зовут {}?'.format(Found_Name)
-
-##        bot.send_message(message.from_user.id,text=name_confirm, reply_markup=Y_N_keyboard_1)
-##        print('Y_N_keyboard_1 shown to user {}'.format(message.from_user.id))
-##
-##        @bot.callback_query_handler(func=lambda call: True)
-##        def Yes_No_handler_contact(call):
-##
-##            if call.data=='yes':
-##
-##                print('call data Yes_1 received from user {}'.format(call.from_user.id))
-##                user_tlg_id=str(call.from_user.id)
-##
-##                bot.send_message(call.from_user.id,'Отлично, спасибо!')
-##                #ВНИМАНИЕ! ЗДЕСЬ ТЕСТОВЫЙ ЛИСТ, А НЕ РЕАЛЬНЫЙ!
-##                id_location = "Лист1!E{}".format(user_row)
-##                data="{}".format(user_tlg_id)
-##                print('User tlg data 2 be written: ',repr(id_location),repr(data))
-##
-##                #ЭТОТ МОДУЛЬ ПЕРЕИМЕНОВАТЬ
-##                GSheet_write.BB_GSh_write(id_location,data)
-##
-##                Start_text='Теперь вы можете полноценно пользоваться ботом'
-##                bot.send_message(call.from_user.id, Start_text)
-##
-##            elif call.data=='no':
-##                bot.send_message(call.from_user.id,\
-##                'Очень странно.\nПожалуйста, сообщите об этом админу: @NoWord')
-##
-##                bot.send_message(call.from_user.id,\
-##                'Вы все равно можете рассылать оповещения\
-##                 волонтерам, но не будете получать оповещения, отправленные другими')
-
-##            bot.send_message(call.from_user.id,\
-##                'Start and greetings if contact found')
-
-#закомментили глючный блок конфликтующих да-нет опросов
-
-
     else:#if phone_result == None
         bot.send_message(message.from_user.id,'\
                                                 Вашего телефона нет в списке.\
@@ -164,9 +116,6 @@ def Name_handler(message):#получили от человека его фам�
     global Names_list;
     Names_list=GSheet_read.BB_GSh_read(Name_range)
 
-    #Test list for debugging:
-    #Names_list=[['Агафонова Ольга'],['Агафонова Мария'],['Реут Дарья'],['Ванька Мокрый'],['James Franco'],['Klara Shubert'],['Агафонова Светлана']]
-
     global result;
     result=List_search.name_search(gotten_name,Names_list)
 
@@ -176,7 +125,7 @@ def Name_handler(message):#получили от человека его фам�
 
     if result==None:
         bot.send_message(message.from_user.id,\
-        'Похоже, вас совсем-совсем нет в списке.\n Пожалуйста, сообщите об этом админу: @NoWord \n\
+        'Похоже, вас совсем-совсем нет в списке.\n Пожалуйста, сообщите об этом админу: @Admin \n\
         Вы все равно можете рассылать оповещения волонтерам, но не будете получать оповещения, отправленные другими')
 
         bot.send_message(message.from_user.id,Start_and_Greeting)
@@ -228,7 +177,7 @@ def Name_handler(message):#получили от человека его фам�
 
 
     else: #Найдены 2 однофамильца и более , предлагаем выбрать себя в списке
-          #result is like: {2: 'Агафонова Ольга',  4: 'Алдохин Руслан'}
+          #result is like: {2: 'Антонова Анна',  4: 'Анохов Руслан'}
 
         #БЛОК ЗНАКОМСТВА 3: В СПИСКАХ НАЙДЕНО НЕСКОЛЬКО ИМЕН
 
@@ -286,7 +235,7 @@ def Name_handler(message):#получили от человека его фам�
 
             bot.send_message(message.from_user.id,'были найдены и другие однофамильцы.\n \
                                                 Напишите админу, если вашего имени нет в перечисленных.\n \
-                                                Связь с админом: @NoWord')
+                                                Связь с админом: @Admin')
 
             bot.send_message(message.from_user.id,text=name_choice_text, reply_markup=name_choice_kboard)
 
@@ -379,27 +328,17 @@ def text_message_handler(message):
             dispatch_list=Lists_to_dispatch.lists_to_dispatch()
             dispatch_list=dispatch_list['Medics']
 
-##            print('dispatch_list =',dispatch_list)
-##            print('dispatch_list type =', type(dispatch_list))
-
         elif call.data=='nonmed':
 
             bot.send_message(call.from_user.id,'Формирую список немедиков...')
             dispatch_list=Lists_to_dispatch.lists_to_dispatch()
             dispatch_list=dispatch_list['NonMedics']
 
-##            print('dispatch_list =',dispatch_list)
-##            print('dispatch_list type =', type(dispatch_list))
-
-
         elif call.data=='everyone':
 
             bot.send_message(call.from_user.id,'Формирую список...')
             dispatch_list=Lists_to_dispatch.lists_to_dispatch()
             dispatch_list=dispatch_list['everyone']
-
-##            print('dispatch_list =',dispatch_list)
-##            print('dispatch_list type =', type(dispatch_list))
 
         #НЕЗАВИСИМО ОТ РЕЗУЛЬТАТА, РАССЫЛКА ПО СПИСКУ
         recipients=0
@@ -428,19 +367,15 @@ def text_message_handler(message):
         bot.send_message(call.from_user.id,\
         'Ваше сообщение разослано. Получателей: {}'.format(recipients))
 
-#END TEST DISPATCHER
+
+def start_working():
+    try:
+        print('Start working')
+        bot.polling(none_stop=True,interval=0)
+    except:
+        print('Exit working')
+        time.sleep(10)
+        start_working()
 
 
-bot.polling(none_stop=True,interval=0)
-
-##def start_working():
-##    try:
-##        print('Start working')
-##        bot.polling(none_stop=True,interval=0)
-##    except:
-##        print('Exit working')
-##        time.sleep(10)
-##        start_working()
-##
-##
-##start_working()
+start_working()
