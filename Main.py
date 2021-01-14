@@ -65,7 +65,7 @@ def contact_handler(message):
     remove_btn = types.ReplyKeyboardRemove(selective=False)
 
     phone_number=message.contact.phone_number
-    #phone_number='89042165822' #DEBUGGING VERSION
+    #phone_number='9007756567' #DEBUGGING VERSION
     contact_confirm='Ищу номер телефона {} в списке волонтеров...'.format(phone_number)
     bot.send_message(message.from_user.id,contact_confirm,reply_markup=remove_btn)
 
@@ -96,54 +96,6 @@ def contact_handler(message):
 
         bot.send_message(message.from_user.id,Start_and_Greeting)
 
-
-#закомментили глючный блок конфликтующих да-нет опросов
-#теперь мы знаем, как его раскомментить: явно указав кнопки, которые он обрабатывает.
-##        Y_N_keyboard_1=types.InlineKeyboardMarkup();
-##        key_yes_1=types.InlineKeyboardButton(text="Да",callback_data='yes');
-##        key_no_1=types.InlineKeyboardButton(text="Нет",callback_data='no');
-##        Y_N_keyboard_1.add(key_yes_1,key_no_1)
-##
-##        user_row=phone_result
-##        name_confirm= 'Вас зовут {}?'.format(Found_Name)
-
-##        bot.send_message(message.from_user.id,text=name_confirm, reply_markup=Y_N_keyboard_1)
-##        print('Y_N_keyboard_1 shown to user {}'.format(message.from_user.id))
-##
-##        @bot.callback_query_handler(func=lambda call: True)
-##        def Yes_No_handler_contact(call):
-##
-##            if call.data=='yes':
-##
-##                print('call data Yes_1 received from user {}'.format(call.from_user.id))
-##                user_tlg_id=str(call.from_user.id)
-##
-##                bot.send_message(call.from_user.id,'Отлично, спасибо!')
-##                #ВНИМАНИЕ! ЗДЕСЬ ТЕСТОВЫЙ ЛИСТ, А НЕ РЕАЛЬНЫЙ!
-##                id_location = "Лист1!E{}".format(user_row)
-##                data="{}".format(user_tlg_id)
-##                print('User tlg data 2 be written: ',repr(id_location),repr(data))
-##
-##                #ЭТОТ МОДУЛЬ ПЕРЕИМЕНОВАТЬ
-##                GSheet_write.BB_GSh_write(id_location,data)
-##
-##                Start_text='Теперь вы можете полноценно пользоваться ботом'
-##                bot.send_message(call.from_user.id, Start_text)
-##
-##            elif call.data=='no':
-##                bot.send_message(call.from_user.id,\
-##                'Очень странно.\nПожалуйста, сообщите об этом админу: @NoWord')
-##
-##                bot.send_message(call.from_user.id,\
-##                'Вы все равно можете рассылать оповещения\
-##                 волонтерам, но не будете получать оповещения, отправленные другими')
-
-##            bot.send_message(call.from_user.id,\
-##                'Start and greetings if contact found')
-
-#закомментили глючный блок конфликтующих да-нет опросов
-
-
     else:#if phone_result == None
         bot.send_message(message.from_user.id,'\
                                                 Вашего телефона нет в списке.\
@@ -162,9 +114,6 @@ def Name_handler(message):#получили от человека его фам�
 
     global Names_list;
     Names_list=GSheet_read.BB_GSh_read(Name_range)
-
-    #Test list for debugging:
-    #Names_list=[['Агафонова Ольга'],['Агафонова Мария'],['Реут Дарья'],['Ванька Мокрый'],['James Franco'],['Klara Shubert'],['Агафонова Светлана']]
 
     global result;
     result=List_search.name_search(gotten_name,Names_list)
@@ -433,17 +382,14 @@ def text_message_handler(message):
         'Ваше сообщение разослано. Получателей: {}'.format(recipients))
 
 
+def start_working():
+    try:
+        print('Start working')
+        bot.polling(none_stop=True,interval=0)
+    except:
+        print('Exit working')
+        time.sleep(10)
+        start_working()
 
-bot.polling(none_stop=True,interval=0)
 
-##def start_working():
-##    try:
-##        print('Start working')
-##        bot.polling(none_stop=True,interval=0)
-##    except:
-##        print('Exit working')
-##        time.sleep(10)
-##        start_working()
-##
-##
-##start_working()
+start_working()
