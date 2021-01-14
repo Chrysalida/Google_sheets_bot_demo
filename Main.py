@@ -354,7 +354,7 @@ def text_message_handler(message):
 ##        print('dispatch_list =',dispatch_list)
 ##        print('dispatch_list type =', type(dispatch_list))
 
-        #НЕЗАВИСИМО ОТ РЕЗУЛЬТАТА, РАССЫЛКА ПО СПИСКУ
+        #НЕЗАВИСИМО ОТ РЕЗУЛЬТАТА: РАССЫЛКА ПО СПИСКУ
         recipients=0
         bot.send_message(call.from_user.id,'Рассылаю...')
 
