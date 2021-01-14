@@ -4,16 +4,16 @@ from BB_config import Medic_range, Tlg_IDs_range
 
 #given cryteria:
 #на данный момент (10.12.20) немедики - это все типы со словом "ассистент". Так и будем проверять.
-##nonmedic_types=['ассистент (+студенты мед.вузов до 4 курса)','координатор-ассистент (+студенты мед.вузов до 4 курса)']
-##medic_types=[]# = все типы, если не пусто и не ассистент
+#координаторы - все кто "координатор"
+#медики - это все кроме ассистентов
 
 def lists_to_dispatch():
     '''
-    forms 3 lists of tlg IDs to dispatch: medics, NonMedics & everyone
+    forms 4 lists of tlg IDs to dispatch: medics, NonMedics, Coords & everyone
 
     takes no args,
-    returns a dictionary dispatch_lists_dict of 3 items:
-    keys are 'Medics', 'NonMedics' & 'everyone',
+    returns a dictionary dispatch_lists_dict of 4 items:
+    keys are 'Medics', 'NonMedics', 'Coords' & 'everyone',
     values are lists of Tlg IDs
     '''
 
@@ -22,11 +22,11 @@ def lists_to_dispatch():
     status_list=GSheet_read.BB_GSh_read(Medic_range)
 
     #objects to be formed:
-##    #indexes=[]# порядковые индексы итемов ссписка, возможно, это лишний список
 
     everyone=[]# это списки непосредственно ID, а не индексов
     Medics_list=[]
     NonMedics_list=[]
+    Coord_list=[]
 
     dispatch_lists_dict={}
 
@@ -36,11 +36,17 @@ def lists_to_dispatch():
 
     for ID in ID_list[1::]: #отсекли нулевой итем, т.к. это заголовок столбца
         if ID!=[]:
-##            #indexes.append(ID_list.index(ID))#возможно, это лишняя строка
+
             everyone.append(ID[0])
-            if status_list[ID_list.index(ID)]!=[]:
+            if status_list[ID_list.index(ID)]!=[]:#если в столбце мед.статуса вообще хоть что-то есть:
+
                 if 'ассист' in status_list[ID_list.index(ID)][0]:
                     NonMedics_list.append(ID[0])
+                    if 'коорд' in status_list[ID_list.index(ID)][0]:#ловим тех, кто и коорд и ассист
+                        Coord_list.append(ID[0])
+
+                elif 'коорд' in status_list[ID_list.index(ID)][0]:
+                    Coord_list.append(ID[0])
 
                 else:
                     Medics_list.append(ID[0])
@@ -48,26 +54,19 @@ def lists_to_dispatch():
     dispatch_lists_dict['everyone']=everyone
     dispatch_lists_dict['Medics']=Medics_list
     dispatch_lists_dict['NonMedics']=NonMedics_list
+    dispatch_lists_dict['Coords']=Coord_list
+
+##    проверочные принты:
+##    print('\neveryone =',everyone)
+##    print('\nMedics_list =',Medics_list)
+##    print('\nNonMedics_list =',NonMedics_list)
+##    print('\nCoord_list =',Coord_list)
 
     return dispatch_lists_dict
 
 
 
-##проверочные принты:
-##print('indexes =',indexes)
-##print('everyone =',everyone)
-##print('Medics_list =',Medics_list)
-##print('NonMedics_list =',NonMedics_list)
-##
-##print('\ndispatch_lists_dict =',dispatch_lists_dict)
-##print(dispatch_lists_dict['Medics'])
-##for medic in dispatch_lists_dict['Medics']:
-##    print(medic)
-
 
 ##Проверка функции
 ##a=lists_to_dispatch()
 ##print(a)
-
-
-
